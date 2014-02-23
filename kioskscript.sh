@@ -35,9 +35,7 @@
 ##
 ## To use this script:
 ## sudo su
-## wget http://pastebin.com/raw.php?i=trakCsES -O kioskscript.sh
-## apt-get install dos2unix # Because of \r woes
-## dos2unix kioskscript.sh
+## wget http://links.sanicki.com/kioskscript -O kioskscript.sh
 ## chmod +x kioskscript.sh
 ## ./kioskscript.sh
 
