@@ -163,7 +163,7 @@ echo '
 . /home/kiosk/.sanickiosk/browser.cfg
 
 # Uncomment to run touchscreen calibration on next boot
-xterm xinput_calibrator
+#xterm xinput_calibrator
 
 # Autorun screensaver on login
 if [ $xscreensaver_enable = "True" ]
