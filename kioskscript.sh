@@ -517,7 +517,7 @@ echo -e "${red}Adding Sanickiosk plugins to Ajenti...${NC}\n"
 apt-get -q=2 install unzip > /dev/null
 wget -q https://github.com/sanicki/sanickiosk_plugins/archive/master.zip -O sanickiosk_plugins-master.zip
 unzip -qq sanickiosk_plugins-master.zip
-mv -r sanickiosk_plugins-master/* /var/lib/ajenti/plugins/
+mv sanickiosk_plugins-master/* /var/lib/ajenti/plugins/
 rm -r sanickiosk_plugins-master*
 echo -e "${green}Done!${NC}\n"
 
