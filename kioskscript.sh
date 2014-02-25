@@ -322,10 +322,9 @@ Enable config URL=false
 fi
 
 # Custom User-Agent
-if [ $custom_user_agent != "None" ]
+if [ "$custom_user_agent" != "None" ]
 then
-	ua="Custom User-Agent="$custom_user_agent
-	echo $ua >> /home/kiosk/.opera/operaprefs.ini
+	echo Custom User-Agent=$custom_user_agent
 fi
 
 # Set Home Page
