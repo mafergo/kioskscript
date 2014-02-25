@@ -324,7 +324,7 @@ fi
 # Custom User-Agent
 if [ "$custom_user_agent" != "None" ]
 then
-	echo Custom User-Agent=$custom_user_agent
+	echo Custom User-Agent=$custom_user_agent >> /home/kiosk/.opera/operaprefs.ini
 fi
 
 # Set Home Page
