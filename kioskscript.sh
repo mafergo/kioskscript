@@ -482,7 +482,7 @@ while sleep $(((sleep_time+999)/1000)); do
 	idle=$(xprintidle)
 	if [ $idle -ge $IDLE_TIME ]
 	then
-		if [ ! $triggered]
+		if ! $triggered
 		then
 			trigger_cmd
 			triggered=true
