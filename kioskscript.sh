@@ -210,10 +210,10 @@ sh /home/kiosk/.sanickiosk/browser_killer.sh &
 # Problem: Despite "First Run Timestamp" the Opera Welcome redirect occurs after each fresh write of operaprefs.ini
 # Workaround: Start and immediately exit Opera (then start again)
 # When probem fixed: Move "Write latest operaprefs.ini", "Write latest browser switches", "Write latest browser switches", & "Read latest browser switches" into "while true; do" loop so browser settings take effect immediately rather than requiring Sanickisk reboot
-opera &
-sleep 2s
+opera  -geometry $res+0+0 $browser_switches $home_url &
+sleep 6s
 killall opera
-sleep 2s
+sleep 6s
 
 # Relaunch browser if closed
 while true; do
@@ -522,6 +522,7 @@ echo -e "${green}Done!${NC}\n"
 
 echo -e "${red}Installing audio...${NC}\n"
 apt-get -q=2 install alsa > /dev/null
+adduser kiosk audio
 echo -e "${green}Done!${NC}\n"
 
 echo -e "${red}Installing print server...${NC}\n"
