@@ -194,6 +194,9 @@ res=$(xrandr -q | awk -F'"'"'current'"'"' -F'"'"','"'"' '"'"'NR==1 {gsub("( |cur
 # Write latest operaprefs.ini
 sh /home/kiosk/.sanickiosk/operaprefs.sh
 
+# Avoid Opera Welcome screen
+touch -t 201401010001 /home/kiosk/.opera/operaprefs.ini
+
 # Write latest toolbar
 sh /home/kiosk/.sanickiosk/toolbar/sanickiosk_toolbar_builder.sh
 
@@ -205,15 +208,6 @@ browser_switches=`cat /home/kiosk/.sanickiosk/opera_switches.cfg`
 
 # Start browser killer
 sh /home/kiosk/.sanickiosk/browser_killer.sh &
-
-# This is a workaround
-# Problem: Despite "First Run Timestamp" the Opera Welcome redirect occurs after each fresh write of operaprefs.ini
-# Workaround: Start and immediately exit Opera (then start again)
-# When probem fixed: Move "Write latest operaprefs.ini", "Write latest browser switches", "Write latest browser switches", & "Read latest browser switches" into "while true; do" loop so browser settings take effect immediately rather than requiring Sanickisk reboot
-opera  -geometry $res+0+0 $browser_switches $home_url &
-sleep 6s
-killall opera
-sleep 6s
 
 # Relaunch browser if closed
 while true; do
