@@ -595,10 +595,6 @@ echo '
 deb ftp://ftp.mondorescue.org/ubuntu 12.10 contrib
 '  >> /etc/apt/sources.list
 apt-get -q=2 update && apt-get -q=2 install --force-yes mondo > /dev/null
-
-echo -e "${red}Installing audio...${NC}\n"
-apt-get -q=2 install alsa > /dev/null
-adduser kiosk audio
 echo -e "\n${green}Done!${NC}\n"
 
 echo -e "${green}Reboot?${NC}"
