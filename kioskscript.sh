@@ -115,7 +115,7 @@ wget -q http://beginwithsoftware.com/wallpapers/archive/Various/images/free_desk
 echo -e "\n${green}Done!${NC}\n"
 
 echo -e "${red}Installing the browser ${blue}(Opera)${red}...${NC}\n"
-wget -q http://deb.opera.com/archive.key -O- | sudo apt-key add -
+wget -O - http://deb.opera.com/archive.key | apt-key add -
 echo '
 ## Opera
 deb http://deb.opera.com/opera/ stable non-free
@@ -589,10 +589,10 @@ echo -e "${red}Adding the customized image installation maker ${blue}(Mondo Resc
 echo -e "${blue}Select '${red}No configuration${blue}' when prompted to install Postfix.\nPress any key to continue...${NC}"
 read -n 1 -p ""
 echo -e "${red}. . .Please wait${NC}\n"
-wget -q -O - ftp://ftp.mondorescue.org/ubuntu/13.10/mondorescue.pubkey | apt-key add -
+wget -q -O - ftp://ftp.mondorescue.org/ubuntu/14.04/mondorescue.pubkey | apt-key add -
 echo '
 ## Mondo Rescue
-deb ftp://ftp.mondorescue.org/ubuntu 13.10 contrib
+deb ftp://ftp.mondorescue.org/ubuntu 14.04 contrib
 '  >> /etc/apt/sources.list
 apt-get -q=2 update && apt-get -q=2 install --force-yes mondo > /dev/null
 
