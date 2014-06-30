@@ -1,8 +1,8 @@
 #!/bin/bash
 
 ## Sanickiosk (get it?), a script for building web kiosks
-## June 2014
-## Tested on Ubuntu Server 14.04 fresh install
+## February 2014
+## Tested on Ubuntu Server 12.04.3 fresh install
 ##               _,,,,_
 ##             ,########,
 ##            ,##'    '##,
@@ -26,7 +26,7 @@
 ## Contact me @ http://scr.im/godzilla8nj
 ## Make a donation http://links.sanicki.com/tip4sanickiosk
 ##
-## Documentation: http://sanickiosk.org
+## Documentation: http://links.sanicki.com/sanickiosk
 ## Download a ready-to-install ISO of Sanickiosk at: http://links.sanicki.com/sanickiosk-dl
 ##
 ## This project replaces:
@@ -46,25 +46,16 @@ blue='\e[1;36m'
 NC='\e[0m' # No color
 
 clear
-# Determine Ubuntu Version Codename
-VERSION=$(lsb_release -cs)
 
 echo -e "${red}Installing operating system updates ${blue}(this may take a while)${red}...${NC}\n"
-# Use mirror method
-sed -i "1i \
-deb mirror://mirrors.ubuntu.com/mirrors.txt $VERSION main restricted universe multiverse\n\
-deb mirror://mirrors.ubuntu.com/mirrors.txt $VERSION-updates main restricted universe multiverse\n\
-deb mirror://mirrors.ubuntu.com/mirrors.txt $VERSION-backports main restricted universe multiverse\n\
-deb mirror://mirrors.ubuntu.com/mirrors.txt $VERSION-security main restricted universe multiverse\n\
-" /etc/apt/sources.list
-# Refresh
+# Check
 apt-get -q=2 update
 # Download & Install
 apt-get -q=2 dist-upgrade > /dev/null
 # Clean
 apt-get -q=2 autoremove
 apt-get -q=2 clean
-echo -e "${green}Done!${NC}\n"
+echo -e "\n${green}Done!${NC}\n"
 
 echo -e "${red}Disabling root recovery mode...${NC}\n"
 sed -i -e 's/#GRUB_DISABLE_RECOVERY/GRUB_DISABLE_RECOVERY/g' /etc/default/grub
@@ -115,19 +106,19 @@ wget -q http://beginwithsoftware.com/wallpapers/archive/Various/images/free_desk
 echo -e "\n${green}Done!${NC}\n"
 
 echo -e "${red}Installing the browser ${blue}(Opera)${red}...${NC}\n"
-wget -O - http://deb.opera.com/archive.key | apt-key add -
+wget -q http://deb.opera.com/archive.key -O- | sudo apt-key add -
 echo '
 ## Opera
 deb http://deb.opera.com/opera/ stable non-free
 '  >> /etc/apt/sources.list
-echo "
+echo '
 ## Ubuntu Partners
-deb http://archive.canonical.com/ $VERSION partner
-"  >> /etc/apt/sources.list
+deb http://archive.canonical.com/ precise partner
+'  >> /etc/apt/sources.list
 apt-get -q=2 update
 apt-get -q=2 install opera > /dev/null
-apt-get -q=2 install flashplugin-installer icedtea-7-plugin ttf-liberation > /dev/null # flash, java, and fonts
-mkdir /home/kiosk/.opera
+apt-get -q=2 install flashplugin-installer ttf-liberation > /dev/null # flash and fonts
+mkdir /home/kiosk/.opera && mkdir /home/kiosk/.opera/toolbar
 # Delete default Opera RSS Feed Readers
 find /usr/share/opera -name "feedreaders.ini" -print0 | xargs -0 rm -rf
 # Delete default Opera Webmail Providers
@@ -147,7 +138,7 @@ Enabled=0
 
 [Speed Dial 1]
 Title=Sanickiosk Documentation
-Url=http://sanickiosk.org
+Url=http://links.sanicki.com/sanickiosk
 ' > /home/kiosk/.opera/speeddial.sav
 # Create the Opera filter
 echo '
@@ -173,11 +164,6 @@ echo '
 
 # Uncomment to run touchscreen calibration on next boot
 #xterm xinput_calibrator
-
-# Disable right-click
-	if [ $nocontextmenu != "False" ]
-	then xmodmap -e "pointer = 1 2 99"
-	fi
 
 # Autorun screensaver on login
 if [ $xscreensaver_enable = "True" ]
@@ -205,10 +191,6 @@ fi
 # Get screen resolution
 res=$(xrandr -q | awk -F'"'"'current'"'"' -F'"'"','"'"' '"'"'NR==1 {gsub("( |current)","");print $2}'"'"')
 
-# Nuke it from orbit
-rm -r /home/kiosk/.opera
-mkdir /home/kiosk/.opera
-
 # Write latest operaprefs.ini
 sh /home/kiosk/.sanickiosk/operaprefs.sh
 
@@ -217,10 +199,6 @@ touch -t 201401010001 /home/kiosk/.opera/operaprefs.ini
 
 # Write latest toolbar
 sh /home/kiosk/.sanickiosk/toolbar/sanickiosk_toolbar_builder.sh
-
-# Restore keyboard shortcuts
-mkdir /home/kiosk/.opera/keyboard
-cp /home/kiosk/.sanickiosk/sanickiosk_keyboard.ini /home/kiosk/.opera/keyboard/
 
 # Write latest browser switches
 bash /home/kiosk/.sanickiosk/set_opera_switches.sh
@@ -278,9 +256,7 @@ for option in glslideshow_duration glslideshow_pan glslideshow_fade glslideshow_
 	else
 		if [ $value="True" ]
 		then
-			switches=$switches" -clip"
-		else
-			switches=$switches" -letterbox"
+			switches=$switches" -"$option
 		fi
 	fi
 done
@@ -316,7 +292,6 @@ Accept License=1
 
 [User Prefs]
 Auto Dropdown=0
-Keyboard Configuration=/home/kiosk/.opera/keyboard/sanickiosk_keyboard.ini
 Toolbar Configuration=/home/kiosk/.opera/toolbar/sanickiosk_toolbar.ini
 Speed Dial State=2
 Show Startup Dialog=0
@@ -426,17 +401,9 @@ if [ $hide_zoom = "False" ]
 then
 	echo "ZoomSlider6" >> /home/kiosk/.sanickiosk/toolbar/sanickiosk_toolbar-3.cfg
 fi		
-if [ $hide_printprev = "False" ]
-then
-	echo "Button7, \"Print preview\"=\"Print preview,,,,Cascade\"" >> /home/kiosk/.sanickiosk/toolbar/sanickiosk_toolbar-3.cfg
-fi		
-if [ $hide_print = "False" ]
-then
-	echo "Button8, \"Print\"=\"Print document,,,,Print document\"" >> /home/kiosk/.sanickiosk/toolbar/sanickiosk_toolbar-3.cfg
-fi		
 if [ $hide_reset = "False" ]
 then
-	echo "Button9, \"Reset Kiosk\"=\"Zoom to,100,,,Restart transfer > Exit\"" >> /home/kiosk/.sanickiosk/toolbar/sanickiosk_toolbar-3.cfg
+	echo "Button7, \"Reset Kiosk\"=\"Zoom to,100,,,Restart transfer > Exit\"" >> /home/kiosk/.sanickiosk/toolbar/sanickiosk_toolbar-3.cfg
 fi		
 ' > /home/kiosk/.sanickiosk/toolbar/sanickiosk_toolbar-3.sh
 # Toolbar Part 4 of 4
@@ -465,27 +432,8 @@ else
 	# Hide Toolbar
 	sed -i "/Alignment=/c\Alignment=0" /home/kiosk/.sanickiosk/toolbar/sanickiosk_toolbar-2.cfg
 fi
-mkdir /home/kiosk/.opera/toolbar/
 cat /home/kiosk/.sanickiosk/toolbar/sanickiosk_toolbar-*.cfg > /home/kiosk/.opera/toolbar/sanickiosk_toolbar.ini
 ' > /home/kiosk/.sanickiosk/toolbar/sanickiosk_toolbar_builder.sh
-# Create keyboard shortcuts
-echo '
-Opera Preferences version 2.1
-; Do not edit this file while Opera is running
-; This file is stored in UTF-8 encoding
-
-[Version]
-File Version=1
-
-[Info]
-Description=Sanickiosk Keyboard Shortcuts
-Author=Rob Clayton
-Version=1
-NAME=ajenti
-
-[Application]
-F1 shift="Open URL in new page, "https://127.0.0.1""
-' > /home/kiosk/.sanickiosk/sanickiosk_keyboard.ini
 # Create Opera switches script
 echo '
 #!/bin/bash
@@ -494,7 +442,7 @@ echo '
 . /home/kiosk/.sanickiosk/browser.cfg
 
 switches=""
-for option in kioskmode fullscreen nokeys nomenu nodownload noprint nomaillinks ; do
+for option in kioskmode fullscreen nokeys nocontextmenu nomenu nodownload noprint nomaillinks ; do
 	value=${!option}
 	if [ $value != "False" ]
 	then
@@ -569,49 +517,30 @@ echo -e "${green}Done!${NC}\n"
 echo -e "${red}Installing audio...${NC}\n"
 apt-get -q=2 install alsa > /dev/null
 adduser kiosk audio
-echo -e "\n${green}Done!${NC}\n"
+echo -e "${green}Done!${NC}\n"
 
-#echo -e "${red}Installing print server...${NC}\n"
-#tasksel install print-server > /dev/null
-#usermod -aG lpadmin administrator
-#usermod -aG lp,sys kiosk
-#sed -i '/listen/Id' /etc/cups/cupsd.conf
-#sed -i '/SystemGroup lpadmin/a\\n# Listen on http port\nPort 80' /etc/cups/cupsd.conf
-#sed -i -n '/\/Location/{x;d;};1h;1!{x;p;};${x;p;}' /etc/cups/cupsd.conf
-#sed -i 's/.*\/Location.*/Order deny,allow\n&/' /etc/cups/cupsd.conf
-#echo -e "${green}Done!${NC}\n"
+echo -e "${red}Installing print server...${NC}\n"
+tasksel install print-server > /dev/null
+usermod -aG lpadmin administrator
+sed -i '/listen/Id' /etc/cups/cupsd.conf
+sed -i '/SystemGroup lpadmin/a\\n# Listen on http port\nPort 80' /etc/cups/cupsd.conf
+sed -i -n '/\/Location/{x;d;};1h;1!{x;p;};${x;p;}' /etc/cups/cupsd.conf
+sed -i 's/.*\/Location.*/Order deny,allow\n&/' /etc/cups/cupsd.conf
+echo -e "${green}Done!${NC}\n"
 
 echo -e "${red}Installing touchscreen support...${NC}\n"
-apt-get -q=2 install xserver-xorg-input-multitouch xinput-calibrator > /dev/null
+apt-get -q=2 install utouch xinput-calibrator > /dev/null
 echo -e "${green}Done!${NC}\n"
 
 echo -e "${red}Adding the customized image installation maker ${blue}(Mondo Rescue)${red}...${NC}\n"
 echo -e "${blue}Select '${red}No configuration${blue}' when prompted to install Postfix.\nPress any key to continue...${NC}"
 read -n 1 -p ""
 echo -e "${red}. . .Please wait${NC}\n"
-wget -q -O - ftp://ftp.mondorescue.org/ubuntu/14.04/mondorescue.pubkey | apt-key add -
-echo '
-## Mondo Rescue
-deb ftp://ftp.mondorescue.org/ubuntu 14.04 contrib
-'  >> /etc/apt/sources.list
-apt-get -q=2 update && apt-get -q=2 install --force-yes mondo > /dev/null
-
-echo -e "${red}Adding the browser-based system administration tool ${blue}(Ajenti)${red}...${NC}\n"
-wget -q http://repo.ajenti.org/debian/key -O- | apt-key add -
-echo '
-## Ajenti
-deb http://repo.ajenti.org/ng/debian main main ubuntu
-'  >> /etc/apt/sources.list
-apt-get -q=2 update && apt-get -q=2 install ajenti > /dev/null
-service ajenti stop
-# Changing to default https port
-sed -i 's/"port": 8000/"port": 443/' /etc/ajenti/config.json
-echo -e "\n${green}Done!${NC}\n"
-
-echo -e "${red}Installing audio...${NC}\n"
-apt-get -q=2 install alsa > /dev/null
-adduser kiosk audio
-echo -e "\n${green}Done!${NC}\n"
+wget -q ftp://ftp.mondorescue.org/ubuntu/`lsb_release -r|awk '{print $2}'`/mondorescue.sources.list
+sh -c "cat mondorescue.sources.list >> /etc/apt/sources.list"
+apt-get -q=2 update && apt-get -q=2 install --force-yes mondo
+clear
+echo -e "${green}Done!${NC}\n"
 
 echo -e "${green}Reboot?${NC}"
 select yn in "Yes" "No"; do
