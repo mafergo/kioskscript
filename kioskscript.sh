@@ -589,12 +589,29 @@ echo -e "${red}Adding the customized image installation maker ${blue}(Mondo Resc
 echo -e "${blue}Select '${red}No configuration${blue}' when prompted to install Postfix.\nPress any key to continue...${NC}"
 read -n 1 -p ""
 echo -e "${red}. . .Please wait${NC}\n"
-wget -q ftp://ftp.mondorescue.org/ubuntu/13.10/mondorescue.sources.list
-#wget -q ftp://ftp.mondorescue.org/ubuntu/`lsb_release -r|awk '{print $2}'`/mondorescue.sources.list
-sh -c "cat mondorescue.sources.list >> /etc/apt/sources.list"
-apt-get -q=2 update && apt-get -q=2 install --force-yes mondo
-clear
-echo -e "${green}Done!${NC}\n"
+wget -q -O - ftp://ftp.mondorescue.org/ubuntu/14.04/mondorescue.pubkey | apt-key add -
+echo '
+## Mondo Rescue
+deb ftp://ftp.mondorescue.org/ubuntu 14.04 contrib
+'  >> /etc/apt/sources.list
+apt-get -q=2 update && apt-get -q=2 install --force-yes mondo > /dev/null
+
+echo -e "${red}Adding the browser-based system administration tool ${blue}(Ajenti)${red}...${NC}\n"
+wget -q http://repo.ajenti.org/debian/key -O- | apt-key add -
+echo '
+## Ajenti
+deb http://repo.ajenti.org/ng/debian main main ubuntu
+'  >> /etc/apt/sources.list
+apt-get -q=2 update && apt-get -q=2 install ajenti > /dev/null
+service ajenti stop
+# Changing to default https port
+sed -i 's/"port": 8000/"port": 443/' /etc/ajenti/config.json
+echo -e "\n${green}Done!${NC}\n"
+
+echo -e "${red}Installing audio...${NC}\n"
+apt-get -q=2 install alsa > /dev/null
+adduser kiosk audio
+echo -e "\n${green}Done!${NC}\n"
 
 echo -e "${green}Reboot?${NC}"
 select yn in "Yes" "No"; do
