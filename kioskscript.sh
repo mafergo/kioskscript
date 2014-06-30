@@ -589,7 +589,7 @@ echo -e "${red}Adding the customized image installation maker ${blue}(Mondo Resc
 echo -e "${blue}Select '${red}No configuration${blue}' when prompted to install Postfix.\nPress any key to continue...${NC}"
 read -n 1 -p ""
 echo -e "${red}. . .Please wait${NC}\n"
-wget -q -O - ftp://ftp.mondorescue.org/ubuntu/14.04/mondorescue.pubkey | apt-key add -
+wget -q -O - ftp://ftp.mondorescue.org/ubuntu/14.04/pb.pubkey | apt-key add -
 echo '
 ## Mondo Rescue
 deb ftp://ftp.mondorescue.org/ubuntu 14.04 contrib
