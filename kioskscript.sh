@@ -429,7 +429,7 @@ if [ $hide_zoom = "False" ]
 then
 	echo "ZoomSlider6" >> /home/kiosk/.sanickiosk/toolbar/sanickiosk_toolbar-3.cfg
 fi		
-if [ $hide_printprev = "False" ]
+if [ $hide_ppreview = "False" ]
 then
 	echo "Button7, \"Print preview\"=\"Print preview,,,,Cascade\"" >> /home/kiosk/.sanickiosk/toolbar/sanickiosk_toolbar-3.cfg
 fi		
