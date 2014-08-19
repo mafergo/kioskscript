@@ -125,7 +125,7 @@ echo '
 deb http://deb.opera.com/opera/ stable non-free
 '  >> /etc/apt/sources.list
 apt-get -q=2 update
-apt-get -q=2 install --no-install-recommends debian-archive-keyring opera > /dev/null
+apt-get -q=2 install --no-install-recommends opera > /dev/null
 apt-get -q=2 install --no-install-recommends flashplugin-installer icedtea-7-plugin ttf-liberation > /dev/null # flash, java, and fonts
 mkdir /home/kiosk/.opera
 # Delete default Opera RSS Feed Readers
