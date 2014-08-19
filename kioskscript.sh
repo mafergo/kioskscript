@@ -589,10 +589,10 @@ apt-get -q=2 install --no-install-recommends xserver-xorg-input-multitouch xinpu
 echo -e "${green}Done!${NC}\n"
 
 echo -e "${red}Adding the customized image installation maker ${blue}(Mondo Rescue)${red}...${NC}\n"
-wget -q -O - ftp://ftp.mondorescue.org/ubuntu/13.10/mondorescue.pubkey | apt-key add -
+wget -q -O - ftp://ftp.mondorescue.org/ubuntu/12.10/mondorescue.pubkey | apt-key add -
 echo '
 ## Mondo Rescue
-deb ftp://ftp.mondorescue.org/ubuntu 13.10 contrib
+deb ftp://ftp.mondorescue.org/ubuntu 12.10 contrib
 '  >> /etc/apt/sources.list
 apt-get -q=2 update && apt-get -q=2 install --no-install-recommends --force-yes mondo > /dev/null
 echo -e "${green}Done!${NC}\n"
