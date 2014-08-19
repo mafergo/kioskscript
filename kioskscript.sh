@@ -72,13 +72,13 @@ update-grub
 echo -e "\n${green}Done!${NC}\n"
 
 echo -e "${red}Enabling secure wireless support...${NC}\n"
-apt-get install -q=2 wpasupplicant > /dev/null
+apt-get -q=2 install --no-install-recommends wpasupplicant > /dev/null
 echo -e "${green}Done!${NC}\n"
 
 echo -e "${red}Installing a graphical user interface...${NC}\n"
-apt-get -q=2 install xorg nodm > /dev/null
+apt-get -q=2 install --no-install-recommends xorg nodm matchbox-window-manager > /dev/null
 # Hide Cursor
-apt-get -q=2 install unclutter > /dev/null
+apt-get -q=2 install --no-install-recommends unclutter > /dev/null
 echo -e "\n${green}Done!${NC}\n"
 
 echo -e "${red}Creating kiosk user...${NC}\n"
@@ -89,7 +89,7 @@ sed -i -e 's/NODM_USER=root/NODM_USER=kiosk/g' /etc/default/nodm
 echo -e "${green}Done!${NC}\n"
 
 echo -e "${red}Installing and configuring the screensaver...${NC}\n"
-apt-get -q=2 install xscreensaver xscreensaver-data-extra xscreensaver-gl-extra libwww-perl > /dev/null
+apt-get -q=2 install --no-install-recommends xscreensaver xscreensaver-data-extra xscreensaver-gl-extra libwww-perl > /dev/null
 # Create .xscreensaver
 echo '
 # XScreenSaver Preferences File
@@ -125,8 +125,8 @@ echo '
 deb http://deb.opera.com/opera/ stable non-free
 '  >> /etc/apt/sources.list
 apt-get -q=2 update
-apt-get -q=2 install --force-yes opera > /dev/null
-apt-get -q=2 install flashplugin-installer icedtea-7-plugin ttf-liberation > /dev/null # flash, java, and fonts
+apt-get -q=2 install --no-install-recommends debian-archive-keyring opera > /dev/null
+apt-get -q=2 install --no-install-recommends flashplugin-installer icedtea-7-plugin ttf-liberation > /dev/null # flash, java, and fonts
 mkdir /home/kiosk/.opera
 # Delete default Opera RSS Feed Readers
 find /usr/share/opera -name "feedreaders.ini" -print0 | xargs -0 rm -rf
@@ -230,6 +230,9 @@ browser_switches=`cat /home/kiosk/.sanickiosk/opera_switches.cfg`
 
 # Start browser killer
 sh /home/kiosk/.sanickiosk/browser_killer.sh &
+
+# Start window manager
+matchbox-window-manager &
 
 # Relaunch browser if closed
 while true; do
@@ -506,7 +509,7 @@ echo $switches > /home/kiosk/.sanickiosk/opera_switches.cfg
 ' > /home/kiosk/.sanickiosk/set_opera_switches.sh
 chmod +x /home/kiosk/.sanickiosk/set_opera_switches.sh
 # Create browser killer
-apt-get -q=2 install xprintidle > /dev/null
+apt-get -q=2 install --no-install-recommends xprintidle > /dev/null
 echo '
 #!/bin/bash
 # Import variables
@@ -552,14 +555,14 @@ echo '
 ## Ajenti
 deb http://repo.ajenti.org/ng/debian main main ubuntu
 '  >> /etc/apt/sources.list
-apt-get -q=2 update && apt-get -q=2 install ajenti > /dev/null
+apt-get -q=2 update && apt-get -q=2 install --no-install-recommends ajenti > /dev/null
 service ajenti stop
 # Changing to default https port
 sed -i 's/"port": 8000/"port": 443/' /etc/ajenti/config.json
 echo -e "\n${green}Done!${NC}\n"
 
 echo -e "${red}Adding Sanickiosk plugins to Ajenti...${NC}\n"
-apt-get -q=2 install unzip > /dev/null
+apt-get -q=2 install --no-install-recommends unzip > /dev/null
 wget -q https://github.com/sanicki/sanickiosk_plugins/archive/master.zip -O sanickiosk_plugins-master.zip
 unzip -qq sanickiosk_plugins-master.zip
 mv sanickiosk_plugins-master/* /var/lib/ajenti/plugins/
@@ -567,35 +570,32 @@ rm -r sanickiosk_plugins-master*
 echo -e "${green}Done!${NC}\n"
 
 echo -e "${red}Installing audio...${NC}\n"
-apt-get -q=2 install alsa > /dev/null
+apt-get -q=2 install --no-install-recommends alsa > /dev/null
 adduser kiosk audio
 echo -e "\n${green}Done!${NC}\n"
 
-#echo -e "${red}Installing print server...${NC}\n"
-#tasksel install print-server > /dev/null
-#usermod -aG lpadmin administrator
-#usermod -aG lp,sys kiosk
-#sed -i '/listen/Id' /etc/cups/cupsd.conf
-#sed -i '/SystemGroup lpadmin/a\\n# Listen on http port\nPort 80' /etc/cups/cupsd.conf
-#sed -i -n '/\/Location/{x;d;};1h;1!{x;p;};${x;p;}' /etc/cups/cupsd.conf
-#sed -i 's/.*\/Location.*/Order deny,allow\n&/' /etc/cups/cupsd.conf
-#echo -e "${green}Done!${NC}\n"
+echo -e "${red}Installing print server...${NC}\n"
+tasksel install print-server > /dev/null
+usermod -aG lpadmin administrator
+usermod -aG lp,sys kiosk
+sed -i '/listen/Id' /etc/cups/cupsd.conf
+sed -i '/SystemGroup lpadmin/a\\n# Listen on http port\nPort 80' /etc/cups/cupsd.conf
+sed -i -n '/\/Location/{x;d;};1h;1!{x;p;};${x;p;}' /etc/cups/cupsd.conf
+sed -i 's/.*\/Location.*/Order deny,allow\n&/' /etc/cups/cupsd.conf
+echo -e "${green}Done!${NC}\n"
 
 echo -e "${red}Installing touchscreen support...${NC}\n"
-apt-get -q=2 install xserver-xorg-input-multitouch xinput-calibrator > /dev/null
+apt-get -q=2 install --no-install-recommends xserver-xorg-input-multitouch xinput-calibrator > /dev/null
 echo -e "${green}Done!${NC}\n"
 
 echo -e "${red}Adding the customized image installation maker ${blue}(Mondo Rescue)${red}...${NC}\n"
-echo -e "${blue}Select '${red}No configuration${blue}' when prompted to install Postfix.\nPress any key to continue...${NC}"
-read -n 1 -p ""
-echo -e "${red}. . .Please wait${NC}\n"
 wget -q -O - ftp://ftp.mondorescue.org/ubuntu/12.10/mondorescue.pubkey | apt-key add -
 echo '
 ## Mondo Rescue
 deb ftp://ftp.mondorescue.org/ubuntu 12.10 contrib
 '  >> /etc/apt/sources.list
-apt-get -q=2 update && apt-get -q=2 install mondo
-echo -e "\n${green}Done!${NC}\n"
+apt-get -q=2 update && apt-get -q=2 install --no-install-recommends --force-yes mondo > /dev/null
+echo -e "${green}Done!${NC}\n"
 
 echo -e "${green}Reboot?${NC}"
 select yn in "Yes" "No"; do
