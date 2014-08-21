@@ -578,10 +578,27 @@ echo -e "${red}Installing print server...${NC}\n"
 tasksel install print-server > /dev/null
 usermod -aG lpadmin administrator
 usermod -aG lp,sys kiosk
-sed -i '/listen/Id' /etc/cups/cupsd.conf
-sed -i '/SystemGroup lpadmin/a\\n# Listen on http port\nPort 80' /etc/cups/cupsd.conf
-sed -i -n '/\/Location/{x;d;};1h;1!{x;p;};${x;p;}' /etc/cups/cupsd.conf
-sed -i 's/.*\/Location.*/Order deny,allow\n&/' /etc/cups/cupsd.conf
+echo '
+LogLevel debug
+SystemGroup lpadmin
+Port 80
+Listen /var/run/cups/cups.sock
+Browsing On
+BrowseOrder allow,deny
+BrowseAddress @LOCAL
+<Location />
+  Order allow,deny
+  Allow all
+</Location>
+<Location /admin>
+  Order allow,deny
+  Allow all
+</Location>
+<Location /admin/conf>
+  Order allow,deny
+  Allow all
+</Location>
+'  > /etc/cups/cupsd.conf
 echo -e "${green}Done!${NC}\n"
 
 echo -e "${red}Installing touchscreen support...${NC}\n"
